@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Audio Container</title>
+</head>
+<body>
+<script>
+    const bgmKey = 'xinling_bgm_global';
+    let bgm = null;
+    let isPlaying = false;
+
+    function initBGM() {
+        bgm = new Audio('../../static/Radio.mp3');
+        bgm.loop = true;
+        bgm.volume = 0.5;
+
+        const state = getState();
+        bgm.currentTime = state.currentTime || 0;
+
+        bgm.addEventListener('canplay', () => {
+            if (state.playing) {
+                bgm.play().catch(() => {});
+            }
+        });
+
+        bgm.ontimeupdate = () => {
+            saveState(isPlaying, bgm.currentTime);
+        };
+
+        bgm.onended = () => {
+            isPlaying = false;
+            saveState(false, 0);
+        };
+
+        window.addEventListener('message', (e) => {
+            if (!e.data || !e.data.type) return;
+            switch (e.data.type) {
+                case 'play':
+                    bgm.play().then(() => {
+                        isPlaying = true;
+                        saveState(true, bgm.currentTime);
+                    }).catch(() => {});
+                    break;
+                case 'pause':
+                    bgm.pause();
+                    isPlaying = false;
+                    saveState(false, bgm.currentTime);
+                    break;
+                case 'toggle':
+                    if (bgm.paused) {
+                        bgm.play().then(() => {
+                            isPlaying = true;
+                            saveState(true, bgm.currentTime);
+                        }).catch(() => {});
+                    } else {
+                        bgm.pause();
+                        isPlaying = false;
+                        saveState(false, bgm.currentTime);
+                    }
+                    break;
+                case 'getState':
+                    window.parent.postMessage({
+                        type: 'stateResponse',
+                        playing: !bgm.paused,
+                        currentTime: bgm.currentTime
+                    }, '*');
+                    break;
+                case 'setVolume':
+                    bgm.volume = e.data.volume || 0.5;
+                    break;
+            }
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === bgmKey && e.newValue) {
+                try {
+                    const state = JSON.parse(e.newValue);
+                    bgm.currentTime = state.currentTime || 0;
+                    if (state.playing && bgm.paused) {
+                        bgm.play().catch(() => {});
+                        isPlaying = true;
+                    } else if (!state.playing && !bgm.paused) {
+                        bgm.pause();
+                        isPlaying = false;
+                    }
+                } catch(err) {}
+            }
+        });
+
+        if (state.playing) {
+            bgm.play().catch(() => {});
+            isPlaying = true;
+        }
+    }
+
+    function getState() {
+        const state = localStorage.getItem(bgmKey);
+        return state ? JSON.parse(state) : { playing: true, currentTime: 0 };
+    }
+
+    function saveState(playing, currentTime) {
+        localStorage.setItem(bgmKey, JSON.stringify({ playing, currentTime }));
+    }
+
+    initBGM();
+</script>
+</body>
+</html>
