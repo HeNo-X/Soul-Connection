@@ -1,0 +1,22 @@
+{
+  "name": "mind-cabin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "form-data": "^4.0.5",
+    "multer": "^2.1.1",
+    "openai": "^6.34.0",
+    "tencentcloud-sdk-nodejs-aiart": "^4.1.216",
+    "tencentcloud-sdk-nodejs-hunyuan": "^4.1.188"
+  }
+}
