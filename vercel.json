@@ -13,15 +13,15 @@
     },
     {
       "src": "/static/(.*)",
-      "dest": "static/$1"
+      "dest": "/static/$1"
     },
     {
       "src": "/Pages/(.*)",
-      "dest": "Pages/$1"
+      "dest": "/Pages/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "Index.html"
+      "src": "/",
+      "dest": "/Index.html"
     }
   ]
 }
