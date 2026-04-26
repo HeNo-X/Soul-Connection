@@ -1,0 +1,23 @@
+{
+  "name": "mind-cabin",
+  "version": "1.0.0",
+  "description": "心灵共鸣舱 - AI情感支持应用",
+  "main": "Pages/AI/server.js",
+  "scripts": {
+    "start": "node Pages/AI/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "form-data": "^4.0.5",
+    "multer": "^2.1.1",
+    "openai": "^6.34.0",
+    "sharp": "^0.34.5",
+    "tencentcloud-sdk-nodejs-aiart": "^4.1.216",
+    "tencentcloud-sdk-nodejs-hunyuan": "^4.1.188"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

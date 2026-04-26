@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: mind-cabin
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: DOUBAO_API_KEY
+        sync: false
+      - key: DOUBAO_TEXT_MODEL_ID
+        sync: false
+      - key: QWEN_API_KEY
+        sync: false
