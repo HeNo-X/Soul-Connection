@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "Pages/AI/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "Pages/AI/server.js"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "static/$1"
+    },
+    {
+      "src": "/Pages/(.*)",
+      "dest": "Pages/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "Index.html"
+    }
+  ]
+}
