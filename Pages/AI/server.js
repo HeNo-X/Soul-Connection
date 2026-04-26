@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
@@ -7,14 +8,19 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Get the root directory of the project
+const projectRoot = path.resolve(__dirname, '..', '..');
+
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-app.use(express.static('../..'));
+// Serve static files from the project root
+app.use(express.static(projectRoot));
 
+// Root path returns Index.html
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/../../Index.html');
+    res.sendFile(path.join(projectRoot, 'Index.html'));
 });
 
 const upload = multer({
