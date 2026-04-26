@@ -499,6 +499,7 @@
                 item.dataset.index = index;
                 const img = document.createElement('img');
                 img.src = previewUrl;
+                img.loading = 'lazy';
                 item.appendChild(img);
                 const removeBtn = document.createElement('span');
                 removeBtn.className = 'remove-preview';
