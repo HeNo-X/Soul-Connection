@@ -1,43 +1,33 @@
-const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-let sharp;
-try {
-    sharp = require('sharp');
-} catch (e) {
-    console.warn('sharp module not available, image compression disabled');
-    sharp = null;
-}
+const sharp = require('sharp');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = 3001;
 
-// Get the root directory of the project
-const projectRoot = path.resolve(__dirname, '..', '..');
-
+// --- 基础配置 ---
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Serve static files from the project root
-app.use(express.static(projectRoot));
-
-// Root path returns Index.html
-app.get('/', (req, res) => {
-    res.sendFile(path.join(projectRoot, 'Index.html'));
-});
-
+// 配置文件上传 (内存存储)
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 }
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
 
+// 豆包API接入点基础地址
 const DOUBAO_API_BASE = 'https://ark.cn-beijing.volces.com/api/v3';
+
+// 通义千问API接入点 (兼容OpenAI格式)
 const QWEN_API_BASE = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+
+// 全局请求超时设置 (30秒)
 const FETCH_TIMEOUT = 30000;
 
+// 带超时的 fetch
 async function fetchWithTimeout(url, options, timeout = FETCH_TIMEOUT) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -54,6 +44,7 @@ async function fetchWithTimeout(url, options, timeout = FETCH_TIMEOUT) {
     }
 }
 
+// --- 工具函数：判断是否为图像生成请求 ---
 function isImageGenerationRequest(text) {
     const keywords = [
         '生成', '画', '图片', '插图', '绘制', '一幅', '一张',
@@ -63,6 +54,7 @@ function isImageGenerationRequest(text) {
     return keywords.some(kw => text.toLowerCase().includes(kw.toLowerCase()));
 }
 
+// 返回预设的温暖回复
 function getImageGenerationFallbackResponse(userText) {
     const responses = [
         `小灵暂时无法直接给你发送图片呢~ 不过，我能感受到你描述的这个画面是如此的温馨。虽然不能亲手画出来，但请允许我用文字陪你一起想象这个场景吧。`,
@@ -79,6 +71,7 @@ function getImageGenerationFallbackResponse(userText) {
     }
 }
 
+// --- 1. 智能对话接口 (豆包文本模型) ---
 app.post('/api/chat', async (req, res) => {
     try {
         const { messages } = req.body;
@@ -131,6 +124,7 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
+// --- 2. 图片理解接口 (通义千问 Qwen-VL) ---
 app.post('/api/vision', upload.single('image'), async (req, res) => {
     try {
         let imageBase64;
@@ -143,17 +137,12 @@ app.post('/api/vision', upload.single('image'), async (req, res) => {
         console.log(`📷 收到图片请求，大小: ${(req.file.size / 1024).toFixed(2)} KB`);
 
         try {
-            if (sharp) {
-                const compressedBuffer = await sharp(req.file.buffer)
-                    .resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
-                    .jpeg({ quality: 80 })
-                    .toBuffer();
-                imageBase64 = compressedBuffer.toString('base64');
-                console.log(`✅ 图片压缩成功，压缩后大小: ${(compressedBuffer.length / 1024).toFixed(2)} KB`);
-            } else {
-                imageBase64 = req.file.buffer.toString('base64');
-                console.log('⚠️ 使用原始图片（未压缩）');
-            }
+            const compressedBuffer = await sharp(req.file.buffer)
+                .resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
+                .jpeg({ quality: 80 })
+                .toBuffer();
+            imageBase64 = compressedBuffer.toString('base64');
+            console.log(`✅ 图片压缩成功，压缩后大小: ${(compressedBuffer.length / 1024).toFixed(2)} KB`);
         } catch (sharpErr) {
             console.warn('图片压缩失败，使用原始图片:', sharpErr.message);
             imageBase64 = req.file.buffer.toString('base64');
@@ -201,6 +190,7 @@ app.post('/api/vision', upload.single('image'), async (req, res) => {
     }
 });
 
+// --- 3. 生成建议问题接口 ---
 app.post('/api/suggestions', async (req, res) => {
     try {
         const { history } = req.body;
@@ -273,6 +263,7 @@ app.post('/api/suggestions', async (req, res) => {
     }
 });
 
+// 全局错误处理
 app.use((err, req, res, next) => {
     console.error('未捕获的错误:', err.stack);
     if (!res.headersSent) {
@@ -280,6 +271,7 @@ app.use((err, req, res, next) => {
     }
 });
 
+// 防止进程崩溃
 process.on('uncaughtException', (err) => {
     console.error('未捕获的异常:', err);
 });
