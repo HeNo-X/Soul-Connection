@@ -2,7 +2,13 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const sharp = require('sharp');
+let sharp;
+try {
+    sharp = require('sharp');
+} catch (e) {
+    console.warn('sharp module not available, image compression disabled');
+    sharp = null;
+}
 require('dotenv').config();
 
 const app = express();
@@ -137,12 +143,17 @@ app.post('/api/vision', upload.single('image'), async (req, res) => {
         console.log(`📷 收到图片请求，大小: ${(req.file.size / 1024).toFixed(2)} KB`);
 
         try {
-            const compressedBuffer = await sharp(req.file.buffer)
-                .resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
-                .jpeg({ quality: 80 })
-                .toBuffer();
-            imageBase64 = compressedBuffer.toString('base64');
-            console.log(`✅ 图片压缩成功，压缩后大小: ${(compressedBuffer.length / 1024).toFixed(2)} KB`);
+            if (sharp) {
+                const compressedBuffer = await sharp(req.file.buffer)
+                    .resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
+                    .jpeg({ quality: 80 })
+                    .toBuffer();
+                imageBase64 = compressedBuffer.toString('base64');
+                console.log(`✅ 图片压缩成功，压缩后大小: ${(compressedBuffer.length / 1024).toFixed(2)} KB`);
+            } else {
+                imageBase64 = req.file.buffer.toString('base64');
+                console.log('⚠️ 使用原始图片（未压缩）');
+            }
         } catch (sharpErr) {
             console.warn('图片压缩失败，使用原始图片:', sharpErr.message);
             imageBase64 = req.file.buffer.toString('base64');
