@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>心灵共鸣舱 - 登录</title>
+    <!-- Font Awesome 6 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+            background: linear-gradient(135deg, #ffbccd 0%, #ffdee9 50%, #ffe0e8 100%);
+            overflow-x: hidden;
+        }
+
+        /* 花瓣容器（不遮挡卡片） */
+        .petal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;  /* 让花瓣不干扰点击 */
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* 单个花瓣样式 */
+        .petal {
+            position: absolute;
+            color: #ffb7c5;
+            font-size: 20px;
+            user-select: none;
+            opacity: 0.7;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0.7;
+            }
+            80% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 主卡片 */
+        .login-card {
+            max-width: 400px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.05);
+            padding: 32px 24px;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 10;  /* 确保卡片在花瓣之上 */
+            backdrop-filter: blur(0px); /* 无模糊，保持清晰 */
+        }
+
+        /* 头部区域 */
+        .brand {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .brand h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c3e50;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .brand .slogan {
+            font-size: 16px;
+            color: #8b9aaf;
+            margin-bottom: 12px;
+        }
+        .register-hint {
+            display: inline-block;
+            font-size: 16px;
+            color: #ffabb4;
+            font-weight: 500;
+            padding: 6px 18px;
+            background-color: #ffeaf4;
+            border-radius: 4px;
+            margin-top: 6px;
+            cursor: default;
+        }
+
+        /* 选项卡 */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid #eceef2;
+            padding-bottom: 12px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            color: #7e8c9e;
+            padding: 8px 0;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            color: #ff557f;
+            background-color: #fee9f1;
+            font-weight: 600;
+        }
+
+        /* 通用表单项 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 16px 18px;
+            border: 1px solid #e0e4e9;
+            border-radius: 10px;
+            font-size: 15px;
+            background-color: #fafbfc;
+            transition: border 0.2s;
+            outline: none;
+        }
+        input:focus {
+            border-color: #ff557f;
+            background-color: #ffffff;
+        }
+        input::placeholder {
+            color: #b3bfcd;
+            font-weight: 400;
+        }
+
+        /* 验证码行*/
+        .code-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .code-row input {
+            flex: 1;
+        }
+        .code-btn {
+            flex-shrink: 0;
+            background-color: #ffa6be;
+            border: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 0 20px;
+            height: 42px;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 6px 12px rgba(230, 74, 116, 0.2);
+            transition: background-color 0.2s;
+        }
+        .code-btn:hover {
+            background-color: #ff557f;
+        }
+        .code-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* 同意协议 */
+        .agree-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 16px 0 24px;
+            font-size: 14px;
+            color: #4a5a6e;
+            cursor: pointer;
+        }
+        .agree-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: #ff557f;
+            margin: 0;
+        }
+        .agree-check a {
+            color: #ff557f;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .agree-check a:hover {
+            text-decoration: underline;
+        }
+
+        /* 登录按钮 */
+        .login-btn {
+            width: 100%;
+            background-color: #ffa4a6;
+            border: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 18px rgba(230, 83, 93, 0.2);
+            transition: all 0.2s;
+        }
+        .login-btn:hover {
+            background-color: #ff5762;
+            transform: translateY(-2px);
+        }
+
+        /* 底部链接行 (快捷登录 / 境外) */
+        .link-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 16px 0 8px;
+            font-size: 14px;
+        }
+        .link-row a {
+            color: #7e8c9e;
+            text-decoration: none;
+            font-weight: 450;
+        }
+        .link-row a:hover {
+            color: #ff557f;
+        }
+
+        /* 忘记密码link */
+        .ForgotLink {
+            text-align: right;
+            margin: 8px 0 20px;
+        }
+        .ForgotLink a {
+            color: #7e8c9e;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .ForgotLink a:hover {
+            color: #ff557f;
+        }
+
+        /* 第三方登录区域 */
+        .third-party {
+            text-align: center;
+            margin-top: 32px;
+            border-top: 1px dashed #e6eaef;
+            padding-top: 24px;
+        }
+        .third-party p {
+            color: #8f9fb1;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            margin-bottom: 20px;
+        }
+        .social-icons i {
+            font-size: 32px;
+            color: #5e6f82;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.1s;
+        }
+        /* Tab 切换 */
+        .hidden {
+            display: none;
+        }
+        /* 模拟勾选协议区域稍微紧凑 */
+        .agree-check span {
+            line-height: 1.4;
+        }
+        /* 错误提示样式 */
+        .error-msg {
+            color: #ff557f;
+            font-size: 12px;
+            margin-top: -12px;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .error-msg.show {
+            display: block;
+        }
+        /* 抖动动画 */
+        .shake {
+            animation: shakeAnim 0.3s ease-in-out;
+        }
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 飘落花瓣容器 -->
+    <div class="petal-container" id="petalContainer"></div>
+
+    <div class="login-card">
+        <!-- 头部 -->
+        <div class="brand">
+            <h1>心灵共鸣舱</h1>
+            <div class="slogan">世 界 和 我 爱 着 你</div>
+        </div>
+
+        <!-- Tab 切换 -->
+        <div class="tabs">
+            <div class="tab active" id="tab-password" onclick="switchTab('password')">密码登录</div>
+            <div class="tab" id="tab-code" onclick="switchTab('code')">注册账号</div>
+        </div>
+
+        <!-- 注册账号区域 -->
+        <div id="code-tab" class="tab-content hidden">
+            <div class="form-group">
+                <input type="text" id="regUsername" placeholder="请输入用户名（3-16位）">
+            </div>
+            <div class="form-group">
+                <input type="tel" id="regPhone" placeholder="请输入11位手机号">
+            </div>
+            <div class="form-group">
+                <input type="password" id="regPassword" placeholder="请输入密码（6位以上）">
+            </div>
+            <div class="form-group">
+                <input type="password" id="regConfirmPassword" placeholder="请再次输入密码">
+            </div>
+
+            <!-- 同意协议 -->
+            <label class="agree-check">
+                <input type="checkbox" id="agreeCode" checked> <span>我已阅读并同意<a href="javascript:void(0);" onclick="openAgreement(event)">《心灵共鸣舱用户注册协议》</a></span>
+            </label>
+
+            <button class="login-btn" id="regLoginBtn">注册</button>
+        </div>
+
+        <!-- 密码登录区域 -->
+        <div id="password-tab" class="tab-content">
+            <div class="form-group">
+                <input type="text" id="username" placeholder="请输入手机号/邮箱/用户名">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="输入您的密码">
+            </div>
+            <div id="pwdError" class="error-msg">用户名或密码错误，请重试</div>
+
+            <button class="login-btn" id="pwdLoginBtn">登录</button>
+        </div>
+    </div>
+
+    <script>
+        // ---------- 预定义数据 ----------
+        const validAccounts = [
+            "19861865929",          // 手机号
+            "3248939254@qq.com",    // 邮箱
+            "123"                  // 用户名
+        ];
+        const validPassword = "123";
+
+        // ---------- Tab 切换 ----------
+        function switchTab(tabId) {
+            const tabCode = document.getElementById('tab-code');
+            const tabPassword = document.getElementById('tab-password');
+            const contentCode = document.getElementById('code-tab');
+            const contentPassword = document.getElementById('password-tab');
+
+            tabCode.classList.remove('active');
+            tabPassword.classList.remove('active');
+            contentCode.classList.add('hidden');
+            contentPassword.classList.add('hidden');
+
+            if (tabId === 'code') {
+                tabCode.classList.add('active');
+                contentCode.classList.remove('hidden');
+            } else {
+                tabPassword.classList.add('active');
+                contentPassword.classList.remove('hidden');
+                document.getElementById('pwdError').classList.remove('show');
+            }
+        }
+
+        // ---------- 密码登录验证 ----------
+        const pwdLoginBtn = document.getElementById('pwdLoginBtn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const pwdError = document.getElementById('pwdError');
+
+        pwdLoginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const enteredUsername = usernameInput.value.trim();
+            const enteredPassword = passwordInput.value.trim();
+
+            const isUsernameValid = validAccounts.includes(enteredUsername);
+            const isPasswordValid = (enteredPassword === validPassword);
+
+            if (isUsernameValid && isPasswordValid) {
+                window.location.href = './MainPage.html';
+            } else {
+                pwdError.classList.add('show');
+                usernameInput.classList.add('shake');
+                passwordInput.classList.add('shake');
+                setTimeout(() => {
+                    usernameInput.classList.remove('shake');
+                    passwordInput.classList.remove('shake');
+                }, 300);
+            }
+        });
+
+        usernameInput.addEventListener('input', () => pwdError.classList.remove('show'));
+        passwordInput.addEventListener('input', () => pwdError.classList.remove('show'));
+
+        // ---------- 注册账号 ----------
+        const regLoginBtn = document.getElementById('regLoginBtn');
+
+        regLoginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+            const agreeCode = document.getElementById('agreeCode').checked;
+
+            if (!username || username.length < 3 || username.length > 16) {
+                alert('请输入有效的用户名（3-16位）');
+                return;
+            }
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                alert('请输入有效的手机号');
+                return;
+            }
+            if (password.length < 6) {
+                alert('密码至少6位');
+                return;
+            }
+            if (password !== confirmPassword) {
+                alert('两次密码输入不一致');
+                return;
+            }
+            if (!agreeCode) {
+                alert('请阅读并同意用户协议');
+                return;
+            }
+
+            alert('注册成功！即将跳转到主页...');
+            window.location.href = './MainPage.html';
+        });
+
+        // ---------- 协议弹窗 ----------
+        function openAgreement(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const agreementContent = `
+                <div style="text-align: left; line-height: 1.8;">
+                    <h3 style="text-align: center; color: #ff557f; margin-bottom: 20px;">心灵共鸣舱用户注册协议</h3>
+                    
+                    <h4>一、服务条款的确认和接纳</h4>
+                    <p>心灵共鸣舱所有权和运营权归本团队所有。用户在使用本服务时，应遵守以下协议条款。用户通过点击"我已阅读并同意"按钮，即表示与本团队达成协议，接受本服务条款的所有内容。</p>
+                    
+                    <h4>二、服务内容</h4>
+                    <p>心灵共鸣舱致力于为用户提供一个温暖、治愈的在线心灵慰藉平台。主要服务包括：</p>
+                    <ul style="margin-left: 20px;">
+                        <li>自我疗愈方法指导与建议</li>
+                        <li>每日语录与正能量推送</li>
+                        <li>疗愈书单、歌单、影单推荐</li>
+                        <li>呼吸练习与冥想引导</li>
+                        <li>情绪记录与感恩日记</li>
+                        <li>AI助手小灵陪聊疏导</li>
+                    </ul>
+                    
+                    <h4>三、用户注册</h4>
+                    <p>用户在注册时应提供真实、准确的个人信息。用户需对账户安全负责，用户账户遭受的任何损失应由用户自行负责。如发现用户存在违法违规行为，本平台有权立即停止服务。</p>
+                    
+                    <h4>四、隐私保护</h4>
+                    <p>本团队尊重用户的个人隐私，承诺采取合理的安全措施保护用户的个人信息。未经用户授权，本平台不会向第三方披露用户个人信息，但以下情况除外：</p>
+                    <ul style="margin-left: 20px;">
+                        <li>法律法规要求披露</li>
+                        <li>配合政府部门合法要求</li>
+                        <li>保护本平台合法权益</li>
+                    </ul>
+                    
+                    <h4>五、知识产权</h4>
+                    <p>心灵共鸣舱的所有内容，包括但不限于文字、图片、音频、视频、软件、程序、界面设计、版面框架等，均受知识产权法律法规保护。未经授权，用户不得复制、修改、传播上述内容。</p>
+                    
+                    <h4>六、服务变更与终止</h4>
+                    <p>本团队保留随时修改或中断服务而不需通知用户的权利。用户对本服务的使用需自行承担风险。本团队有权在必要时修改服务条款，修改后的协议一旦公布即生效。</p>
+                    
+                    <h4>七、免责声明</h4>
+                    <p>心灵共鸣舱提供的所有内容仅供参考，不构成任何医疗建议、诊断或治疗。用户因依赖本平台信息而造成的任何损失，本团队不承担责任。如有心理困扰，请及时寻求专业帮助。</p>
+                    
+                    <h4>八、附则</h4>
+                    <p>本协议的解释权归本团队所有。如本协议的任何条款与法律法规相抵触，以法律法规规定为准。本协议未尽事宜，由本团队另行规定。</p>
+                    
+                    <p style="margin-top: 30px; text-align: right;">心灵共鸣舱团队</p>
+                </div>
+            `;
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;';
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 30px; max-width: 600px; max-height: 80vh; overflow-y: auto; margin: 20px; position: relative;">
+                    <button onclick="this.closest('div').parentElement.remove()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">&times;</button>
+                    ${agreementContent}
+                    <button onclick="this.closest('div').parentElement.remove()" style="width: 100%; margin-top: 20px; padding: 12px; background: linear-gradient(135deg, #ffa4a6, #ff5762); color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;">我已阅读并同意</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // ---------- 飘落花瓣效果（调整：更慢飘落，更慢生成，最多24片）----------
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.classList.add('petal');
+            // 使用用户指定的花瓣样式数组
+            const petals = ['🌸', '🌺', '🌼', '🌷', '🌸', '🌸', '🌸', '🌼', '🌺', '🌸'];
+            petal.textContent = petals[Math.floor(Math.random() * petals.length)];
+            // 随机大小 (16px ~ 36px)
+            const size = 12 + Math.random() * 28;
+            petal.style.fontSize = size + 'px';
+            // 随机水平起始位置
+            petal.style.left = Math.random() * 100 + '%';
+            // 飘落速度更慢：动画持续时间 8~12 秒
+            const duration = 6 + Math.random() * 6;   // 8s ~ 12s
+            petal.style.animationDuration = duration + 's';
+            // 立即开始下落，无延迟
+            petal.style.opacity = 0.5 + Math.random() * 0.4;
+            document.getElementById('petalContainer').appendChild(petal);
+
+            // 动画结束后移除元素
+            petal.addEventListener('animationend', () => {
+                petal.remove();
+            });
+        }
+
+        // 生成频率更慢：间隔 1200ms（1.2秒）
+        let petalInterval = setInterval(() => {
+            const existingPetals = document.querySelectorAll('.petal').length;
+            // 最多同时存在 24 片花瓣，达到上限则本次不生成
+            if (existingPetals < 28) {
+                createPetal();
+            }
+        }, 1200);
+
+        // 页面关闭时清除定时器
+        window.addEventListener('beforeunload', () => {
+            clearInterval(petalInterval);
+        });
+    </script>
+</body>
+</html>

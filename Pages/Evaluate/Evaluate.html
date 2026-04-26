@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理自我测评目录</title>
+	<!-- 引入Tailwind CSS简化样式开发 -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<!-- 引入Font Awesome图标 -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+	<!-- 引入 Swiper 样式 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+	<!-- 引入 Vue 2 -->
+	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            /* 上白下浅粉渐变背景 */
+            background: linear-gradient(to bottom, #ffffff, #ffc4cc);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 40px;
+        }
+
+        h1 {
+            color: #8a5a6b;
+            font-size: 32px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 16px;
+            margin-bottom: 60px;
+        }
+
+        /* 横向分布容器 - 确保两个板块并排 */
+        .cards-container {
+            display: flex;
+            gap: 80px;
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: nowrap;
+            width: 80%;
+            max-width: 1000px;
+			text-decoration: none; 
+        }
+
+        /* 通用卡片样式 */
+        .card {
+            flex: 1;
+            min-width: 350px;
+            padding: 40px 30px;
+            border-radius: 32px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                0 10px 30px rgba(138, 90, 107, 0.1),
+                inset 0 -5px 10px rgba(255, 255, 255, 0.8),
+                inset 0 5px 10px rgba(242, 167, 185, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+			text-decoration: none; 
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 15px 40px rgba(138, 90, 107, 0.2),
+                inset 0 -5px 10px rgba(255, 255, 255, 0.9),
+                inset 0 5px 10px rgba(242, 167, 185, 0.2);
+				text-decoration: none; 
+        }
+
+        /* 泡泡心事的3D泡泡图标样式 */
+        .bubble-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle at 30% 30%, 
+                rgba(255, 255, 255, 0.9), 
+                rgba(255, 182, 193, 0.8)
+            );
+            box-shadow: 
+                0 8px 20px rgba(214, 120, 144, 0.3),
+                inset 0 -5px 10px rgba(255, 182, 193, 0.5),
+                inset 0 5px 10px rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* 泡泡高光效果 - 增强3D感 */
+        .bubble-icon::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            opacity: 0.8;
+        }
+
+        /* 心灵森林图标样式保持协调 */
+        .forest-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 8px rgba(138, 90, 107, 0.2);
+        }
+
+        .card-title {
+            font-size: 26px;
+            color: #d67890;
+            text-align: center;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .card-desc {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+            text-align: center;
+            margin-bottom: 28px;
+            flex: 1;
+        }
+
+        .card-tag {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            color: #fff;
+            background: linear-gradient(to right, #f2a7b9, #d67890);
+            box-shadow: 0 4px 12px rgba(214, 120, 144, 0.2);
+            margin: 0 auto;
+            display: block;
+            width: fit-content;
+			text-decoration: none; 
+        }
+
+        /* 响应式适配 - 小屏幕自动换行 */
+        @media (max-width: 800px) {
+            .cards-container {
+                flex-wrap: wrap;
+                gap: 40px;
+            }
+            .card {
+                min-width: 100%;
+            }
+        }
+    </style>
+	
+	<style>
+		.topline {
+			display: flex;
+			align-items: center;
+			background: rgba(255, 255, 255, 0.7);
+			backdrop-filter: blur(2px);
+			/* 背景模糊效果 */
+			box-shadow: 2px 0 10px rgba(76, 61, 241, 0.1);
+			width: 100%;
+			height: 8.5vh;
+			position: fixed;
+			z-index: 10;
+			top: 0;
+			left: 0;
+		}
+		/* 顶部导航部分 */
+		.nav-links {
+			display: flex;
+			margin-left: 27.4vw;
+			gap: 2rem;
+			font-weight: 500;
+		}
+		
+		.nav-item {
+			cursor: pointer;
+			margin: 0 14pt;
+			padding: 6px 0;
+			color: #5e5e5e;
+			position: relative;
+			transition: color 0.2s;
+		}
+		
+		.nav-item.active {
+			color: #ff2c6b;
+			font-weight: 800;
+		}
+		
+		.nav-item:hover {
+			color: #ff5e66;
+		}
+		@keyframes spin {
+			from { transform: rotate(0deg); }
+			to { transform: rotate(360deg); }
+		}
+	</style>
+</head>
+<body>
+	<!-- 导航栏 -->
+		<div class="topline">
+			<!-- Logo -->
+			<a class="flex items-center space-x-2 text-primary font-bold text-xl" style="margin-left: 50pt;color: #f48c9f;">
+			    <i class="fa-solid fa-heart-pulse"></i>
+			    <span class="lang-zh">心灵共鸣舱</span>
+			</a>
+			<!-- 导航部分 -->
+			<div class="nav-links">
+				<span class="nav-item" data-page="MainPage" onclick="window.location.href='../MainPage/MainPage.html'">首页</span>
+				<span class="nav-item" data-page="Release" onclick="window.location.href='../Release/Release.html'">心灵疗愈</span>
+				<span class="nav-item active" data-page="Evaluate">心理测评</span>
+				<span class="nav-item" data-page="Mine" onclick="window.location.href='../Mine/Mine.html'">个人主页</span>
+			</div>
+			<div class="nav-right">
+				<div class="placeholder-icon"></div>
+			</div>
+			<div style="position: absolute;right: 120pt;" onclick="window.location.href='../AI/AI.html'">
+				<img src='../../static/Ai.png' title="AI小灵" style="height: 33pt;width: 33pt;filter: brightness(1.35);transition: 0.6s;cursor: pointer;">
+			</div>
+			<div style="position: absolute;right: 50pt;" id="bgmControl" title="点击控制BGM播放/暂停" onclick="toggleBGM()">
+				<div style="font-size: 24px; cursor: pointer; transition: 0.3s;" id="bgmIcon">🎵</div>
+			</div>
+			
+			    <!-- 移动端菜单按钮 -->
+			    <button class="md:hidden text-gray-600 hover:text-primary" id="mobile-menu-btn">
+			        <i class="fa-solid fa-bars text-xl"></i>
+			    </button>
+			</div>
+		</div>
+		
+    <h1 style="margin-top: 10vh;">心灵镜像长廊</h1>
+    <div class="subtitle">倾听内心——与自己温柔相遇</div>
+
+   <div class="cards-container">
+      
+       <a href="bubble-test.html" class="card">
+           <div class="bubble-icon"></div>
+           <h2 class="card-title">泡泡心事</h2>
+           <p class="card-desc">轻触你的心声，完成10道心理测评题，实时查看心理健康指数，在温柔的泡泡氛围中倾听内心的声音。</p>
+           <span class="card-tag">情绪健康测评</span>
+       </a>
+   
+       
+       <a href="forest-test.html" class="card">
+           <div class="forest-icon">🌲</div>
+           <h2 class="card-title">心灵森林</h2>
+           <p class="card-desc">开启内心探索之旅，跟随直觉做出选择，发现被忽略的美好特质，在宁静森林中遇见真实的自己。</p>
+           <span class="card-tag">人格特质探索</span>
+       </a>
+	   
+	   <a href="cloud.html" class="card">
+	       <div class="forest-icon">☁</div>
+	       <h2 class="card-title">消消云朵</h2>
+	       <p class="card-desc">吹散你最想消除的压力云朵，去寻求最快乐的天地</p>
+	       <span class="card-tag">解压测试并行</span>
+	   </a>
+   </div>
+    </div>
+
+    <!-- 全局BGM播放器（隐藏iframe） -->
+    <iframe id="bgmFrame" src="../../static/audio-service.html" style="display:none;" width="0" height="0"></iframe>
+
+    <script>
+        const BGM_KEY = 'xinling_bgm';
+        let bgmFrame = null;
+        let isPlaying = false;
+
+        function getBGMState() {
+            const state = localStorage.getItem(BGM_KEY);
+            return state ? JSON.parse(state) : { playing: true, currentTime: 0 };
+        }
+
+        function saveBGMState(playing, currentTime) {
+            localStorage.setItem(BGM_KEY, JSON.stringify({ playing, currentTime }));
+        }
+
+        function initBGM() {
+            bgmFrame = document.getElementById('bgmFrame');
+            const state = getBGMState();
+            isPlaying = state.playing;
+            updateBGMIcon(state.playing);
+
+            window.addEventListener('message', (e) => {
+                if (e.data && e.data.type === 'bgmState') {
+                    isPlaying = e.data.playing;
+                    updateBGMIcon(e.data.playing);
+                }
+            });
+
+            window.addEventListener('storage', (e) => {
+                if (e.key === BGM_KEY && e.newValue) {
+                    try {
+                        const state = JSON.parse(e.newValue);
+                        isPlaying = state.playing;
+                        updateBGMIcon(state.playing);
+                    } catch(err) {}
+                }
+            });
+
+            setTimeout(() => {
+                bgmFrame.contentWindow.postMessage({ type: 'getState' }, '*');
+            }, 100);
+        }
+
+        function updateBGMIcon(playing) {
+            const bgmIcon = document.getElementById('bgmIcon');
+            if (playing) {
+                bgmIcon.style.transform = 'scale(1.1)';
+                bgmIcon.style.animation = 'spin 3s linear infinite';
+            } else {
+                bgmIcon.style.transform = 'scale(1)';
+                bgmIcon.style.animation = '';
+            }
+        }
+
+        function toggleBGM() {
+            if (bgmFrame && bgmFrame.contentWindow) {
+                bgmFrame.contentWindow.postMessage({ type: 'toggle' }, '*');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            initBGM();
+        });
+    </script>
+</body>
+</html>
