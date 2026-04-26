@@ -11,10 +11,10 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-app.use(express.static('.'));
+app.use(express.static('../..'));
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/AI.html');
+    res.sendFile(__dirname + '/../../Index.html');
 });
 
 const upload = multer({
